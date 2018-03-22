@@ -1,0 +1,36 @@
+//GeoJason element type of "Feature"
+//  has properties, and geometry associated with it
+
+// Here we define a group of features
+
+var states = [
+{
+  "type":	"Feature"
+  "properties":	{"party": "Republican"}
+  "geometry"  :	{
+		"type":	"Polygon"
+		"coordinates":	[[ [1,2], [3,4], [4,5] ]]
+		} 
+},
+{
+
+  "type":	"Feature"
+  "properties":	{"party": "Democrat"}
+  "geometry"  :	{
+		"type":	"Polygon"
+		"coordinates":	[[ [1,2], [3,4], [4,5] ]]
+}
+
+] // end of all states
+
+// This is how you can style the features
+L.geoJSON(states,
+         {
+          style:	{ weight:  0.5,
+                          switch (feature.properties.party) {
+				case 'Republican' : return {color: "#ff0000"};
+				case 'Democrat'   : return {color: "#gg0000"};
+                             }
+                        }
+         }).addTo(map)
+

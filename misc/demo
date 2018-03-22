@@ -1,0 +1,28 @@
+myconfig = {
+
+hotzone : {
+            "radius"	: 10		,
+            "color"	: "red"		,
+            "position"  : [31.1, 65.2]
+},
+
+
+safezone : {
+
+;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

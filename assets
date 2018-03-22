@@ -1,0 +1,22 @@
+//   Add all your assets and theri positions here
+//  ============================================
+assets = [
+{ 
+  pos: [31.63906, 65.708498],
+  type:  tank1, 
+  tag:  "Tank"
+},
+ 
+{ 
+  pos: [31.646659, 65.73938],
+  type:  tank1, 
+  tag:  "Tank"
+},
+
+{
+  pos:[31.637306, 65.768547],
+  type:  tank1, 
+  tag:  "Tank"
+}
+
+  ];

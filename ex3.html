@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>Quick Start - Leaflet</title>
+	<meta charset="utf-8" />
+        <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="node_modules/leaflet/dist/leaflet.css"> 
+        <script src="node_modules/leaflet/dist/leaflet.js"></script>
+	<script src="node_modules/leaflet-omnivore/leaflet-omnivore.min.js"> </script>
+	
+</head>
+<body>
+
+<div id="mapid" style="width: 600px; height: 400px;"></div>
+<script>
+      // Why LatLong are reversed (or is tiles JSON format has reverse format)
+/*
+	var mymap = L.map('mapid').setView(new L.LatLng(31.63456, 65.7571), 13);
+
+	L.tileLayer('{id}/{z}/{x}/{y}.png', 
+	    { maxZoom: 15, minZoom:11,
+	           id: 'data/Tiles'
+	}).addTo(mymap);
+*/
+var mymap = L.map('mapid').setView(new L.LatLng(-122.0, 36.7571), 13);
+// Adding kml data source into another layer
+var runLayer = omnivore.kml('data/sample.kml').addTo(mymap);
+	L.marker([31.61,   65.74]).addTo(mymap)
+		.bindPopup("<b>KK</b><br />Junction").openPopup();
+
+	L.circle([31.6, 65.73], 500, {
+		color: 'red',
+		fillColor: '#f03',
+		fillOpacity: 0.5
+	}).addTo(mymap).bindPopup("Hot Zone");
+
+ L.polygon(
+  [[31.642421, 65.756264],
+  [31.634529, 65.766907],
+  [31.645344, 65.773773]],
+  {color       : 'blue',
+    fillColor  : 'skyblue',
+    fillOpacity: 0.5}
+    ).addTo(mymap).bindPopup("Friendly<br>Forces"); 
+
+	var popup = L.popup();
+
+	function onMapClick(e) {
+			console.log(e.latlng.toString());
+		popup
+			.setLatLng(e.latlng)
+			.setContent("LatLong: " + e.latlng.toString())
+			.openOn(mymap);
+	}
+
+	mymap.on('click', onMapClick);
+
+//	var mymap = L.map('mapid').setView([51.505, -1.09], 13);
+</script>
+
+</body>
+</html>

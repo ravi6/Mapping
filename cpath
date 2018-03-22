@@ -1,0 +1,15 @@
+// Digitized Lat Long using the map on Click
+// and debug window (used with Kandahar region map)
+// for demonstartion with animate.html
+var cpath = [
+[31.604855, 65.679674],
+[31.616843, 65.692713],
+[31.626783, 65.700262],
+[31.63906, 65.708498],
+[31.649582, 65.715017],
+[31.650751, 65.7284],
+[31.646659, 65.73938],
+[31.644321, 65.746929],
+[31.641983, 65.75791],
+[31.637306, 65.768547]
+]

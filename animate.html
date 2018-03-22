@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Quick Start - Leaflet</title>
+	<meta charset="utf-8" />
+        <! -- link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" --/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="leaflet/leaflet.css"> 
+        <script src="leaflet/leaflet.js"></script>
+        <script src="myicons.js"></script>
+
+<style>
+#mapDiv {    //  map container
+     width:  800px;
+     height: 600px;
+     transition: height 0.5s ease-in-out;
+}
+</style>
+
+</head>
+<body onLoad="window.resizeTo(850,650);">
+<div id=mapDiv>Hello</div >
+
+<script src="cpath"> </script>     //Saved path points variable 
+<script src="genpath.js"></script> // Animation Path script
+<script src="assets"></script>     // User specified assets
+
+<script>
+
+// Why LatLong are reversed (or is tiles JSON format has reverse format)
+  var mymap = L.map('mapDiv').setView(new L.LatLng(31.63456, 65.7571), 13);
+
+// Kandahar map I extracted from public domain
+  var basemap = L.tileLayer('file:///{id}/{z}/{x}/{y}.png', 
+                            {maxZoom: 15, minZoom:11,
+                             id: 'home/ravi/hobby/maps/data/Tiles'}).addTo(mymap);
+// Define some regions to draw
+var area1 = L.circle([31.6, 65.73], 500); 
+    area1.setStyle({color: 'red', fillColor: '#f03', fillOpacity: 0.5 });
+    area1.bindPopup("Hot Zone");
+    area1.openPopup();
+    area1.addTo(mymap);
+
+var area2 = L.polygon(
+      [[31.642421, 65.756264], [31.634529, 65.766907], [31.645344, 65.773773]],
+             {color: 'blue', fillColor: 'skyblue', fillOpacity: 0.5})
+             .addTo(mymap)
+             .bindPopup("Friendly<br>Forces")
+	     .openPopup();
+
+
+var safeTrack = L.polyline(cpath, {
+                        smoothFactor: 1,
+                        color: "green",
+			weight: 6,
+                        opacity: 0.5,
+			dashArray: "5, 10"
+                       }).addTo(mymap).bindPopup("Safe Track") ;
+
+safeTrack.setStyle({opacity: 0.3}).addTo(mymap);
+
+
+// a simple marker
+var sMarker = L.marker([31.61,   65.74], {icon: tank2}) 
+               .addTo(mymap)
+               .bindPopup("<b>KK</b><br />Junction")
+	       .openPopup();
+
+         
+// Let us add the areas and the simple marker to showOffGroup
+var showOffGroup = L.layerGroup([sMarker, area1, area2]);
+
+// Prepare another LayerGroup containing fanncy markeres
+
+// Now I make more fancy markers with shades (refer to myicon.js)
+var leaf1 = L.marker([31.61+0.04, 65.74], {icon: greenIcon})
+             .addTo(mymap).bindPopup("Friend").openPopup();
+var leaf2 = L.marker([31.64, 65.77], {icon: redIcon})
+             .addTo(mymap).bindPopup("Foe").openPopup();
+var leaf3 = L.marker([31.6, 65.67], {icon: orangeIcon})
+             .addTo(mymap).bindPopup("Foe").openPopup();
+
+
+var fancyGroup = L.layerGroup([leaf1, leaf2, leaf3]);
+
+// Adding User specified assets into milGroup layer
+
+var milMarkers = [assets.length] ; // dynamic array 
+  for (i=0 ; i<assets.length ; i++)
+milMarkers[i] = 
+L.marker(assets[i].pos, 
+         {icon: assets[i].type}).addTo(mymap)
+		.bindPopup(assets[i].tag).openPopup();
+
+var milGroup = L.layerGroup(milMarkers); // add them to layergroup
+/*
+   Static way of doing it
+var milGroup = L.layerGroup([
+L.marker([31.5, 65.7], {icon: tank1}).addTo(mymap)
+		.bindPopup("Tank").openPopup(),
+L.marker([31.466, 65.67], {icon: plane1}).addTo(mymap)
+		.bindPopup("Boeing 747").openPopup(),
+L.marker([31.5, 64.45], {icon: tank3}).addTo(mymap)
+		.bindPopup("Paton Tank").openPopup()
+]);
+*/
+
+// Add Layers Control to the map
+L.control.layers({main: basemap},
+    {showOff: showOffGroup, fancy: fancyGroup, assets: milGroup})
+    .addTo(mymap);
+
+// it really means hiding
+mymap.removeLayer(leaf1);
+mymap.removeLayer(leaf2);
+mymap.removeLayer(leaf3);
+
+//var mvPos = new L.PosAnimation();
+// Animation of Marker over the Drawn Path
+//--------------------------------------	    
+var  mpath = genPath(cpath); // Linearly interpolated path
+//for (j=0; j<mpath.length; j++)
+  //      console.log(j, "->", mpath[j]);
+
+var i_move = 0; var speed=300 ; 
+var mvPosTimer ;
+
+function moveit(){
+    if (i_move > mpath.length-1) // When path move done
+    {
+       clearInterval(mvPosTimer);
+       i_move = 0;  // Getready for next stab
+       console.log("Cleared mvPosTimer");
+    }
+    else {
+       sMarker.setLatLng(mpath[i_move]);
+       i_move = i_move+1 ;
+       console.log("i_move =", i_move);
+    }} // end moveit callback
+//--------------------------------------	    
+
+// Popup Handling
+var popup = L.popup();  // Create popup layer
+
+// Define a popup call back event handler
+function onMapClick(e) {
+     showLatLong(e) ;
+     MoveMarker();
+	} // end onMapClick
+
+// Register event handler to click event on basemap
+mymap.on('click', onMapClick);
+
+function MoveMarker(){
+      console.log("Starting Move ");
+      mvPosTimer =  setInterval(moveit, 300);
+} // end MoveMarker
+
+function showLatLong(e) {
+	console.log(e.latlng.toString());
+	popup
+         .setLatLng(e.latlng)
+	 .setContent("LatLong: " + e.latlng.toString())
+	 .openOn(mymap);
+} // show Latlong
+
+//	var mymap = L.map('mapDiv').setView([51.505, -1.09], 13);
+
+</script>
+</body>
+</html>
